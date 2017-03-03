@@ -1,16 +1,16 @@
 #include "PSO.h"
 
 
-
-double BIG_DOUBLE = 99999999999999;
+double BIG_DOUBLE = 9999999999;
 double PI = 3.1415926535897;
 
-PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations, string function, int numDimensions) {
+PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
+	 string function, int numDimensions) {
   this->swarm_size = swarmSize;
   this->num_iterations = numIterations;
   this->num_dimensions = numDimensions;
   this->g_best_value = BIG_DOUBLE;
-  
+
   this->phi1 = 2.05;
   this->phi2 = 2.05;
   this->constriction_factor = 0.7298;
@@ -19,11 +19,10 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations, string f
 
   vector <double> gBestPos;
   for(int i = 0; i < num_dimensions; i++){
-    // may get overflow, may not matter
     gBestPos.push_back(BIG_DOUBLE);
   }
   this->g_best_position = gBestPos;
-  
+
   if(neighborhoodTopology == "gl") {
     this->neighborhood_topo = GLOBAL;
   }
@@ -36,7 +35,7 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations, string f
   if(neighborhoodTopology == "ra") {
     this->neighborhood_topo = RANDOM;
   }
-  
+
   if(function == "rok") {
     this->min_position = 15;
     this->max_position = 30;
@@ -61,7 +60,7 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations, string f
   swarm.clear();
   srand(clock());
   initialize_swarm();
-  
+
 }
 
 void PSO::runPSO() {
@@ -77,13 +76,13 @@ void PSO::runPSO() {
         cout << g_best_position[j] << " ";
     }
     cout << endl;
-    
+
 }
 void PSO::initialize_swarm() {
-  
+
   for(int i = 0; i < swarm_size; ++i) {
     Particle p;
-    
+
     // initialize randomly in range
     for(int n = 0; n < num_dimensions; ++ n) {
       p.position.push_back(rand_in_range(min_position, max_position));
@@ -99,7 +98,7 @@ void PSO::initialize_swarm() {
     }
     swarm.push_back(p);
   }// every particle
-  
+
   // build topology
   create_neighborhoods();
   evaluate_neighborhoods();
@@ -107,23 +106,23 @@ void PSO::initialize_swarm() {
 
 
 // get a random double between min and max
-double PSO::rand_in_range(double min, double max) {    
+double PSO::rand_in_range(double min, double max) {
   return double(rand()/double(RAND_MAX)) * (max - min) + min;
 }
 
 // evaluate the neighborhoods and assign neighborhood best
 void PSO::evaluate_neighborhoods() {
   switch(neighborhood_topo) {
-    
+
   case GLOBAL:
     for(int i = 0; i < swarm_size; ++i) {
       swarm[i].n_best_value = g_best_value;
       swarm[i].n_best_position = g_best_position;
     }
-    
-  default: //needs fixing 
+
+  default: //needs fixing
     for(int i = 0; i < swarm_size; ++i) {
-      for(int j = 0; j < swarm[i].neighborhood_indices.size(); ++j) {
+      for(unsigned int j = 0; j < swarm[i].neighborhood_indices.size(); ++j) {
 	if(swarm[j].p_best_value < swarm[i].p_best_value) {
 	  swarm[i].n_best_value = swarm[j].p_best_value;
 	  swarm[i].n_best_position = swarm[j].p_best_position;
@@ -139,7 +138,7 @@ void PSO::create_random () {
     swarm[i].neighborhood_indices.push_back(i);
     for(int j = 0; j < k_neighbors - 1; ++j) {
       int random_index = i;
-      
+
       // find should search vector for the value j
       while(find(swarm[i].neighborhood_indices.begin(), swarm[i].neighborhood_indices.end(), random_index) != swarm[i].neighborhood_indices.end()) {
 	random_index = rand() % swarm_size;
@@ -153,10 +152,16 @@ void PSO::create_random () {
 
 void PSO::create_neighborhoods() {
   switch(neighborhood_topo) {
-    //case GLOBAL: special logic
-  case RING: create_ring();
-  case VON_NEUMANN: create_von_neumann();
-  case RANDOM: create_random();
+  case GLOBAL: break; //special logic, handled in each relevant
+  case RING:
+    create_ring();
+    break;
+  case VON_NEUMANN:
+    create_von_neumann();
+    break;
+  case RANDOM:
+    create_random();
+    break;
   }
 }
 
@@ -172,7 +177,7 @@ void PSO::create_ring() {
 
 void PSO::create_von_neumann() {
   int width = floor(sqrt(swarm_size));
-  
+
   // imagine rectangle with width "width", wrap around
   for(int i = 0; i < swarm_size; ++i) {
     swarm[i].neighborhood_indices.push_back(i);
@@ -187,7 +192,7 @@ void PSO::update_velocities() {
   for(int i = 0; i < swarm_size; ++i) {
     // HOT-SPOT FOR THE BUGS
     vector<double> p_best_difference = vector_subtraction(swarm[i].p_best_position, swarm[i].position);
-    vector<double> n_best_difference = vector_subtraction(swarm[i].n_best_position, swarm[i].position);    
+    vector<double> n_best_difference = vector_subtraction(swarm[i].n_best_position, swarm[i].position);
     for(int j = 0; j < num_dimensions; ++j) {
       swarm[i].velocity[j] = constriction_factor * (swarm[i].velocity[j] + rand_in_range(0,phi1) * p_best_difference[j] + rand_in_range(0,phi2) * n_best_difference[j]);
     }
@@ -227,6 +232,9 @@ double PSO::function_value(vector<double> position) {
   case RASTRIGIN:
     return rastrigin_function(position);
   }
+  // whats the right way to do this?
+  cout << "ERROR ERROR ERROR\n" << endl;
+  return BIG_DOUBLE;
 }
 
 double PSO::rosenbrock_function(vector<double> position) {
@@ -238,15 +246,15 @@ double PSO::rosenbrock_function(vector<double> position) {
 }
 
 double PSO::ackley_function(vector<double> position) {
-  
+
   double sum_part_one = 0;
   double sum_part_two = 0;
-  
+
   for(int i = 0; i < num_dimensions; ++i) {
     sum_part_one += pow(position[i], 2);
     sum_part_two += (position[i], 2) * cos(2 * PI * position[i]);  // define PI in file
   }
-  
+
   return -20 * exp(-0.2 * sqrt(sum_part_one / num_dimensions)) - exp(sum_part_two / num_dimensions) + 20 + exp(1);
 }
 
@@ -264,7 +272,7 @@ double PSO::rastrigin_function(vector<double> position) {
 // element-wise vector subtraction
 vector<double> PSO::vector_subtraction(vector<double> vector1, vector<double> vector2) {
   vector<double> vector_difference;
-  for(int i = 0; i < vector1.size(); ++i) {
+  for(unsigned int i = 0; i < vector1.size(); ++i) {
     vector_difference.push_back(vector1[i] - vector2[i]);
   }
   return vector_difference;
