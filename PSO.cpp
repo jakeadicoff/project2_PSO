@@ -59,7 +59,7 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations, string f
   vector <Particle> s;
   this->swarm = s;
   swarm.clear();
-  srand(time(NULL));
+  srand(clock());
   initialize_swarm();
   
 }
@@ -166,7 +166,6 @@ void PSO::create_ring() {
     swarm[i].neighborhood_indices.push_back(i);
     swarm[i].neighborhood_indices.push_back((i+1)%swarm_size);
     swarm[i].neighborhood_indices.push_back((i-1) % swarm_size);
-    cout << "3" << endl;
   }
 }
 
