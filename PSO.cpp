@@ -42,7 +42,8 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
     this->neighborhood_topo = RANDOM;
   }
   else {
-    cout << "Error: Invalid Topolgy Parameter" << endl;
+    cerr << "Error: Invalid Topolgy Parameter" << endl;
+    exit(EXIT_FAILURE);
   }
 
   // set search function initialization bounds
@@ -65,7 +66,8 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
     this->max_velocity = 4;
     this->function_to_optimize = RASTRIGIN;
   } else {
-    cout << "Error: Invalid Search Function Parameter" << endl;
+    cerr << "Error: Invalid Search Function Parameter" << endl;
+    exit(EXIT_FAILURE);
   }
   swarm.clear();
   srand(clock());
@@ -341,9 +343,7 @@ double PSO::function_value(vector<double> position) {
   case RASTRIGIN:
     return rastrigin_function(position);
   }
-  // whats the right way to do this?
-  cout << "ERROR ERROR ERROR\n" << endl;
-  return MAX_DOUBLE;
+  return MAX_DOUBLE;   // impossible to reach this :)
 }
 
 double PSO::rosenbrock_function(vector<double> position) {
