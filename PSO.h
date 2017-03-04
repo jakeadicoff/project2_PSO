@@ -22,12 +22,11 @@ struct Particle {
 enum Topology {GLOBAL, RING, VON_NEUMANN, RANDOM};
 enum Function {ACKLEY, ROSENBROCK, RASTRIGIN};
 
-
 class PSO {
 public:
     PSO(string neighborhoodTopology, int swarmSize, int numIterations, string function, int numDimensions);
     void runPSO();
-    
+
 private:
     Topology neighborhood_topo;
     Function function_to_optimize;
@@ -36,8 +35,7 @@ private:
     double min_position, max_position, min_velocity, max_velocity;
     vector <double> g_best_position;
     vector <Particle> swarm;
-    
-    
+
     void initialize_swarm();
     void evaluate_neighborhoods();
     void create_neighborhoods();
@@ -52,11 +50,11 @@ private:
     double rosenbrock_function(vector<double> position);
     double ackley_function(vector<double> position);
     double rastrigin_function(vector<double> position);
-    
+
     // utility functions
     vector<double> vector_subtraction(vector<double> vector1, vector<double> vector2);
     double rand_in_range(double min, double max);
-    
+
 };
 
 
