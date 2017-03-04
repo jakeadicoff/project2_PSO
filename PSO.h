@@ -25,7 +25,7 @@ enum Function {ACKLEY, ROSENBROCK, RASTRIGIN};
 class PSO {
 public:
     PSO(string neighborhoodTopology, int swarmSize, int numIterations, string function, int numDimensions);
-    void runPSO();
+    vector<double> runPSO();
 
 private:
     Topology neighborhood_topo;

@@ -1,7 +1,9 @@
 #include "PSO.h"
+#include <limits>
+#include <cfloat>
 
 // constans
-double BIG_DOUBLE = 9999999999;
+double BIG_DOUBLE = numeric_limits<double>::max();
 double PI = 3.1415926535897;
 
 /**
@@ -76,23 +78,22 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
  * Runs the PSO algorithm in the mode specified by the class member
  * variables (eg, ring topology + Ackely function, etc.)
  */
-void PSO::runPSO() {
+vector <double> PSO::runPSO() {
   double start_time = clock();
-  int print_frequency = 30;
-
+  int print_frequency = 10;
+  vector <double> returnValues; 
+ 
   for(int i = 0; i < num_iterations; i++) {
     int print_interval = num_iterations/print_frequency;
     if(i%print_interval == 0) {
-      cout << "Iteration " << i << " value: "
-	   << g_best_value << "\t";
-
-      cout << "Position " << i << ": ";
+      //cout << "Iteration " << i << " value: "<< g_best_value << "\t";
+      returnValues.push_back(g_best_value);
+      //cout << "Position " << i << ": ";
       for(int j = 0; j < num_dimensions; j++) {
-	cout << g_best_position[j] << " ";
+	//cout << g_best_position[j] << " ";
       }
-      cout << endl;
+      //cout << endl;
     }
-
     iterate();
   }
   double end_time = clock();
@@ -103,7 +104,8 @@ void PSO::runPSO() {
     cout << g_best_position[j] << " ";
   }
   cout << endl;
-
+  returnValues.push_back(g_best_value);
+  return returnValues;
 }
 
 /**
