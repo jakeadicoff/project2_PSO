@@ -77,18 +77,32 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
  * variables (eg, ring topology + Ackely function, etc.)
  */
 void PSO::runPSO() {
-    double start_time = clock();
-    for(int i = 0; i < num_iterations; i++) {
-        iterate();
+  double start_time = clock();
+  int print_frequency = 30;
+
+  for(int i = 0; i < num_iterations; i++) {
+    int print_interval = num_iterations/print_frequency;
+    if(i%print_interval == 0) {
+      cout << "Iteration " << i << " value: "
+	   << g_best_value << "\t";
+
+      cout << "Position " << i << ": ";
+      for(int j = 0; j < num_dimensions; j++) {
+	cout << g_best_position[j] << " ";
+      }
+      cout << endl;
     }
-    double end_time = clock();
-    cout << "Runtime: " << end_time - start_time << endl;
-    cout << "Best function value: " << g_best_value << endl;
-    cout << "Best position: ";
-    for(int j = 0; j < num_dimensions; j++) {
-        cout << g_best_position[j] << " ";
-    }
-    cout << endl;
+
+    iterate();
+  }
+  double end_time = clock();
+  cout << "Runtime: " << end_time - start_time << endl;
+  cout << "Best function value: " << g_best_value << endl;
+  cout << "Best position: ";
+  for(int j = 0; j < num_dimensions; j++) {
+    cout << g_best_position[j] << " ";
+  }
+  cout << endl;
 
 }
 
@@ -273,8 +287,8 @@ void PSO::update_velocities() {
       vector_subtraction(swarm[i].n_best_position, swarm[i].position);
 
     for(int j = 0; j < num_dimensions; j++) {
-    // @TODO: There appears to be a seg-fault bug right here
-    // Apparently, n_best_position is not set? breakpoint at those lines.
+      // @TODO: There appears to be a seg-fault bug right here
+      // Apparently, n_best_position is not set? breakpoint at those lines.
       swarm[i].velocity[j] =
 	constriction_factor *
 	(swarm[i].velocity[j] + rand_in_range(0,phi1) * p_best_difference[j]
@@ -328,16 +342,17 @@ double PSO::rosenbrock_function(vector<double> position) {
 }
 
 double PSO::ackley_function(vector<double> position) {
-
-  double sum_part_one = 0;
-  double sum_part_two = 0;
+  double sum_one = 0;
+  double sum_two = 0;
 
   for(int i = 0; i < num_dimensions; i++) {
-    sum_part_one += pow(position[i], 2);
-    sum_part_two += (position[i], 2) * cos(2 * PI * position[i]);  // define PI in file
+    sum_one += pow(position[i], 2);
+    //    sum_two += (position[i], 2) * cos(2 * M_PI * position[i]); //math.h const
+    sum_two += cos(2 * M_PI * position[i]);
   }
 
-  return -20 * exp(-0.2 * sqrt(sum_part_one / num_dimensions)) - exp(sum_part_two / num_dimensions) + 20 + exp(1);
+  return -20 * exp(-0.2 * sqrt(sum_one / num_dimensions)) -
+    exp(sum_two / num_dimensions) + 20 + exp(1);
 }
 
 double PSO::rastrigin_function(vector<double> position) {
