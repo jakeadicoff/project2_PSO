@@ -1,7 +1,7 @@
 #include "PSO.h"
 
 // constans
-double BIG_DOUBLE = 9999999999;
+double MAX_DOUBLE = numeric_limits<float>::max();
 double PI = 3.1415926535897;
 
 /**
@@ -12,7 +12,7 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
   this->swarm_size = swarmSize;
   this->num_iterations = numIterations;
   this->num_dimensions = numDimensions;
-  this->g_best_value = BIG_DOUBLE;
+  this->g_best_value = MAX_DOUBLE;
 
   /** @TODO: we should make these user definable variables */
   this->phi1 = 2.05;
@@ -24,7 +24,7 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
   // initalize global best position at an arbitrary far away point
   vector <double> gBestPos;
   for(int i = 0; i < num_dimensions; i++){
-    gBestPos.push_back(BIG_DOUBLE);
+    gBestPos.push_back(MAX_DOUBLE);
   }
   this->g_best_position = gBestPos;
 
@@ -32,11 +32,11 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
   if(neighborhoodTopology == "gl") {
     this->neighborhood_topo = GLOBAL;
   }
-  else if(neighborhoodTopology == "vn") {
-    this->neighborhood_topo = VON_NEUMANN;
-  }
   else if(neighborhoodTopology == "ri") {
     this->neighborhood_topo = RING;
+  }
+  else if(neighborhoodTopology == "vn") {
+    this->neighborhood_topo = VON_NEUMANN;
   }
   else if(neighborhoodTopology == "ra") {
     this->neighborhood_topo = RANDOM;
@@ -156,20 +156,33 @@ void PSO::create_neighborhoods() {
   case GLOBAL:
     break; //special case, neighborhood logic is handled directly in
 	   //class functions per iteration
+
   case RING:
-    create_ring();
-    break;
-  case VON_NEUMANN:
-    create_von_neumann();
-    break;
-  case RANDOM:
     // If there are fewer particles in the swarm than the neighborhood
     // size, random neighborhood topology becomes equivalent to global
     // topology
-    if(k_neighbors < swarm_size) {
-      create_random();
+    if(swarm_size > 3) {
+      create_ring();
     }
     else { // if the swarm is too small to fill a single neigborhood
+      neighborhood_topo = GLOBAL;
+    }
+    break;
+
+  case VON_NEUMANN:
+    if(swarm_size > 5) {
+      create_von_neumann();
+    }
+    else {
+      neighborhood_topo = GLOBAL;
+    }
+    break;
+
+  case RANDOM:
+    if(swarm_size > k_neighbors) {
+      create_random();
+    }
+    else {
       neighborhood_topo = GLOBAL;
     }
     break;
@@ -185,7 +198,7 @@ void PSO::create_random () {
   for(int i = 0; i < swarm_size; i++) {
     //reset the neighborhood list and best value -- important for re-creation
     swarm[i].neighborhood_indices.clear();
-    swarm[i].n_best_value = BIG_DOUBLE;
+    swarm[i].n_best_value = MAX_DOUBLE;
 
     // each particle is in its own neighborhood
     swarm[i].neighborhood_indices.push_back(i);
@@ -330,7 +343,7 @@ double PSO::function_value(vector<double> position) {
   }
   // whats the right way to do this?
   cout << "ERROR ERROR ERROR\n" << endl;
-  return BIG_DOUBLE;
+  return MAX_DOUBLE;
 }
 
 double PSO::rosenbrock_function(vector<double> position) {
@@ -374,14 +387,16 @@ vector<double> PSO::vector_subtraction(vector<double> vector1, vector<double> ve
 
 
 void PSO::iterate() {
+  // @TODO: Hardcoded mutation rate - change to class variable?
+  double random_topo_recreation_rate = 0.2;
+
   update_velocities();
   update_positions();
   evaluate_swarm();
 
   if(neighborhood_topo == RANDOM) {
-    // @TODO: Hardcoded mutation rate - change to class variable?
     double random_percent = (double) rand() / (RAND_MAX);
-    if(random_percent < 0.2) create_random();
+    if(random_percent < random_topo_recreation_rate) create_random();
   }
   evaluate_neighborhoods();
 }

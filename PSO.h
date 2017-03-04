@@ -1,12 +1,13 @@
 #ifndef __PSO_h
 #define __PSO_h
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <limits>
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
 #include <iostream>
 
 using namespace std;
