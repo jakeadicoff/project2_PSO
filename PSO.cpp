@@ -2,12 +2,8 @@
 #include <limits>
 #include <cfloat>
 
-// constans
-<<<<<<< HEAD
+// constants
 double MAX_DOUBLE = numeric_limits<float>::max();
-=======
-double BIG_DOUBLE = numeric_limits<double>::max();
->>>>>>> 1784dd2b3f7dac98cb338f3becc79cb5bcecb669
 double PI = 3.1415926535897;
 
 /**
@@ -87,8 +83,8 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
 vector <double> PSO::runPSO() {
   double start_time = clock();
   int print_frequency = 10;
-  vector <double> returnValues; 
- 
+  vector <double> returnValues;
+
   for(int i = 0; i < num_iterations; i++) {
     int print_interval = num_iterations/print_frequency;
     if(i%print_interval == 0) {
