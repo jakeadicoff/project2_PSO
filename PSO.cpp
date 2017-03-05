@@ -351,7 +351,8 @@ double PSO::function_value(vector<double> position) {
 double PSO::rosenbrock_function(vector<double> position) {
   double value = 0;
   for(int i = 0; i < num_dimensions-1; i++) {
-    value += 100 * pow(-pow(position[i], 2) + position[i+1], 2) + pow(position[i - 1] - 1, 2);
+    value += 100 * pow((position[i+1] - pow(position[i], 2)), 2)
+      + pow((1 - position[i]), 2);
   }
   return value;
 }
