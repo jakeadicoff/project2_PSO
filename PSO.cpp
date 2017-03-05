@@ -1,7 +1,13 @@
 #include "PSO.h"
+#include <limits>
+#include <cfloat>
 
 // constans
+<<<<<<< HEAD
 double MAX_DOUBLE = numeric_limits<float>::max();
+=======
+double BIG_DOUBLE = numeric_limits<double>::max();
+>>>>>>> 1784dd2b3f7dac98cb338f3becc79cb5bcecb669
 double PI = 3.1415926535897;
 
 /**
@@ -42,7 +48,8 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
     this->neighborhood_topo = RANDOM;
   }
   else {
-    cout << "Error: Invalid Topolgy Parameter" << endl;
+    cerr << "Error: Invalid Topolgy Parameter" << endl;
+    exit(EXIT_FAILURE);
   }
 
   // set search function initialization bounds
@@ -65,7 +72,8 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
     this->max_velocity = 4;
     this->function_to_optimize = RASTRIGIN;
   } else {
-    cout << "Error: Invalid Search Function Parameter" << endl;
+    cerr << "Error: Invalid Search Function Parameter" << endl;
+    exit(EXIT_FAILURE);
   }
   swarm.clear();
   srand(clock());
@@ -76,23 +84,22 @@ PSO::PSO(string neighborhoodTopology, int swarmSize, int numIterations,
  * Runs the PSO algorithm in the mode specified by the class member
  * variables (eg, ring topology + Ackely function, etc.)
  */
-void PSO::runPSO() {
+vector <double> PSO::runPSO() {
   double start_time = clock();
-  int print_frequency = 30;
-
+  int print_frequency = 10;
+  vector <double> returnValues; 
+ 
   for(int i = 0; i < num_iterations; i++) {
     int print_interval = num_iterations/print_frequency;
     if(i%print_interval == 0) {
-      cout << "Iteration " << i << " value: "
-	   << g_best_value << "\t";
-
-      cout << "Position " << i << ": ";
+      //cout << "Iteration " << i << " value: "<< g_best_value << "\t";
+      returnValues.push_back(g_best_value);
+      //cout << "Position " << i << ": ";
       for(int j = 0; j < num_dimensions; j++) {
-	cout << g_best_position[j] << " ";
+	//cout << g_best_position[j] << " ";
       }
-      cout << endl;
+      //cout << endl;
     }
-
     iterate();
   }
   double end_time = clock();
@@ -103,7 +110,8 @@ void PSO::runPSO() {
     cout << g_best_position[j] << " ";
   }
   cout << endl;
-
+  returnValues.push_back(g_best_value);
+  return returnValues;
 }
 
 /**
@@ -341,9 +349,7 @@ double PSO::function_value(vector<double> position) {
   case RASTRIGIN:
     return rastrigin_function(position);
   }
-  // whats the right way to do this?
-  cout << "ERROR ERROR ERROR\n" << endl;
-  return MAX_DOUBLE;
+  return MAX_DOUBLE;   // impossible to reach this :)
 }
 
 double PSO::rosenbrock_function(vector<double> position) {
