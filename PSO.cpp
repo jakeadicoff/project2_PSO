@@ -345,13 +345,17 @@ double PSO::function_value(vector<double> position) {
   case RASTRIGIN:
     return rastrigin_function(position);
   }
-  return MAX_DOUBLE;   // impossible to reach this :)
+  cerr << "Error: Invalid Topolgy Parameter" << endl;
+  exit(EXIT_FAILURE);
 }
 
 double PSO::rosenbrock_function(vector<double> position) {
   double value = 0;
   for(int i = 0; i < num_dimensions-1; i++) {
-    value += 100 * pow(-pow(position[i], 2) + position[i+1], 2) + pow(position[i - 1] - 1, 2);
+    double x = position[i];
+    double y = position[i+1];
+
+    value += 100 * pow((y - (x * x)), 2) + pow((1 - x), 2);
   }
   return value;
 }
@@ -362,7 +366,6 @@ double PSO::ackley_function(vector<double> position) {
 
   for(int i = 0; i < num_dimensions; i++) {
     sum_one += pow(position[i], 2);
-    //    sum_two += (position[i], 2) * cos(2 * M_PI * position[i]); //math.h const
     sum_two += cos(2 * M_PI * position[i]);
   }
 
