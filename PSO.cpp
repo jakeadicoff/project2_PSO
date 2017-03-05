@@ -1,6 +1,7 @@
 #include "PSO.h"
 #include <limits>
 #include <cfloat>
+#include <cmath>
 
 // constans
 double BIG_DOUBLE = numeric_limits<double>::max();
@@ -82,30 +83,54 @@ vector <double> PSO::runPSO() {
   double start_time = clock();
   int print_frequency = 10;
   vector <double> returnValues; 
+
+  // for testing functions
+  vector <double> testVect;
+  for(int i = 0; i < 30; i++) {
+    testVect.push_back(0.0);
+    }
+  //  cout << rosenbrock_function(testVect) << "  " << ackley_function(testVect) << "  " << rastrigin_function(testVect) << endl;
+  
  
   for(int i = 0; i < num_iterations; i++) {
     int print_interval = num_iterations/print_frequency;
     if(i%print_interval == 0) {
-      //cout << "Iteration " << i << " value: "<< g_best_value << "\t";
+      cout << "Iteration " << i << " value: "<< g_best_value << "\t";
       returnValues.push_back(g_best_value);
+      //uncomment to sho position every 1000 iteration
       //cout << "Position " << i << ": ";
-      for(int j = 0; j < num_dimensions; j++) {
+      //for(int j = 0; j < num_dimensions; j++) {
 	//cout << g_best_position[j] << " ";
-      }
-      //cout << endl;
+      //}
+      cout << endl;
     }
     iterate();
   }
   double end_time = clock();
-  cout << "Runtime: " << end_time - start_time << endl;
+  cout << "Runtime: " << double(end_time - start_time)/double(CLOCKS_PER_SEC) << endl;
   cout << "Best function value: " << g_best_value << endl;
   cout << "Best position: ";
   for(int j = 0; j < num_dimensions; j++) {
     cout << g_best_position[j] << " ";
   }
-  cout << endl;
+  //uncomment to see convergence to g_best position
+  //  cout << endl;
+  //for(int i = 0; i < swarm_size; i++) {
+  //cout << "distnace: " << eucDist(swarm[i].position,g_best_position) << endl;
+  //}
+  
   returnValues.push_back(g_best_value);
   return returnValues;
+}
+
+double eucDist(vector<double> v1, vector<double> v2) {
+  double dist;
+  double sum = 0;
+  for(int i = 0; i < 30; i++){
+    sum+= pow(abs(v1[i]-v2[i]),2);
+  }
+  dist = sqrt(sum);
+  return dist;
 }
 
 /**
@@ -267,7 +292,7 @@ void PSO::evaluate_neighborhoods() {
     }
     break;
 
-  default: //needs fixing
+  default: 
     for(int i = 0; i < swarm_size; i++) {
       for(unsigned int j = 0; j < swarm[i].neighborhood_indices.size(); j++) {
 	if(swarm[j].p_best_value < swarm[i].n_best_value) { // @Note: I changed [i].p_best to [i].n_bst
@@ -338,7 +363,7 @@ double PSO::function_value(vector<double> position) {
 double PSO::rosenbrock_function(vector<double> position) {
   double value = 0;
   for(int i = 0; i < num_dimensions-1; i++) {
-    value += 100 * pow(-pow(position[i], 2) + position[i+1], 2) + pow(position[i - 1] - 1, 2);
+    value += 100 * pow(-pow(position[i], 2) + position[i+1], 2) + pow(position[i] - 1, 2);
   }
   return value;
 }

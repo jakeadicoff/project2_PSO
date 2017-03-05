@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   cout << "name the output file with .csv" << endl;
   cin >> outputFileName;
   ofstream outputFile;
-  output += "Neighborhood Topology,Particles,Function,G_best,1000,2000,3000,4000,5000,6000,7000,8000,9000\n";
+  output += "Neighborhood Topology,Particles,Function,G_best,0,1000,2000,3000,4000,5000,6000,7000,8000,9000\n";
   vector <double> values;
   for(int i = 0; i < 4; i++) {
     for(int j = 0; j < 3; j++) {
@@ -57,9 +57,8 @@ int main(int argc, char** argv) {
 	  values.clear();
 	  values = pso_alg.runPSO();
 	  output += neighborhoodTopology + "," + to_string(swarmSize) + "," + function + "," + to_string(values[10]);
-	  cout << "size = " << values.size() << endl;
 	  for(int m = 0; m < 10; m++) {
-	    output += "," + to_string(values[i]);
+	    output += "," + to_string(values[m]);
 	  }
 	  output += "\n";
 	}
@@ -69,6 +68,6 @@ int main(int argc, char** argv) {
   outputFile.open(outputFileName);
   outputFile << output;
   outputFile.close();
-  cout << output << endl;
+  //cout << output << endl;
 return 0;
 }

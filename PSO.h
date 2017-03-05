@@ -11,6 +11,9 @@
 
 using namespace std;
 
+//for testing
+double eucDist(vector<double> v1, vector<double> v2);
+
 struct Particle {
     vector <double> velocity;
     vector <double> position;
