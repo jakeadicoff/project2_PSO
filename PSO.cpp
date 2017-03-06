@@ -227,8 +227,8 @@ void PSO::create_random () {
   for(int i = 0; i < swarm_size; i++) {
     //reset the neighborhood list and best value -- important for re-creation
     swarm[i].neighborhood_indices.clear();
-    swarm[i].n_best_value = MAX_DOUBLE;
-
+    swarm[i].n_best_value = swarm[i].p_best_value;
+    swarm[i].n_best_position = swarm[i].p_best_position;
     // each particle is in its own neighborhood
     swarm[i].neighborhood_indices.push_back(i);
 
@@ -249,7 +249,7 @@ void PSO::create_random () {
 	    swarm[i].neighborhood_indices.end()) {
 	random_index = rand() % swarm_size;
       }
-      swarm[i].neighborhood_indices.push_back(j);
+      swarm[i].neighborhood_indices.push_back(random_index);
     } // for every neighbor
   } // for every particle
 }
@@ -262,8 +262,8 @@ void PSO::create_ring() {
   for(int i = 0; i < swarm_size; i++) {
     // each particle is in its own neighborhood
     swarm[i].neighborhood_indices.push_back(i);
-    swarm[i].neighborhood_indices.push_back((i+1) % swarm_size);
-    swarm[i].neighborhood_indices.push_back((i-1) % swarm_size);
+    swarm[i].neighborhood_indices.push_back(abs((i+1) % swarm_size));
+    swarm[i].neighborhood_indices.push_back(abs((i-1) % swarm_size));
   }
 }
 
@@ -310,6 +310,7 @@ void PSO::evaluate_neighborhoods() {
   default:
     for(int i = 0; i < swarm_size; i++) {
       for(unsigned int j = 0; j < swarm[i].neighborhood_indices.size(); j++) {
+	// HEY
 	if(swarm[j].p_best_value < swarm[i].n_best_value) { // @Note: I changed [i].p_best to [i].n_bst
 	  swarm[i].n_best_value = swarm[j].p_best_value;
 	  swarm[i].n_best_position = swarm[j].p_best_position;
