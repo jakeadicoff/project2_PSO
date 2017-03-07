@@ -58,6 +58,7 @@ private:
     // utility functions
     vector<double> vector_subtraction(vector<double> vector1, vector<double> vector2);
     double rand_in_range(double min, double max);
+    int mod_by_swarm_size(int i);
 
 };
 
